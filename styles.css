@@ -1,0 +1,14 @@
+.navbar-brand > img{
+	height: 50px;
+}
+.navbar-brand {
+	padding-top: 0px;
+}
+
+.timeline {
+	border: 2px solid black;
+	height: 500px;
+}
+body { 
+	padding-top: 70px; 
+}
