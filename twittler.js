@@ -2,10 +2,15 @@ $(document).ready(function() {
   var $timeline = $('.timeline');
   var historyLength = streams.home.length;
 
-  var tweetAppend = function(index) {
+  var tweetAppend = function(index, bold) {
     var tweet = streams.home[index];
-    var $tweet = $('<div></div>');
-    $tweet.text('@' + tweet.user + ': ' + tweet.message + " " + jQuery.timeago(tweet.created_at));
+    if (bold === undefined) {
+      var $tweet = $('<div class="post"></div>');
+    } else {
+      $tweet = $("<div class='post bold'></div>");
+    }
+    var time = Math.floor(tweet.created_at/1000);
+    $tweet.html("<img class=tweetPic src="+tweet.user+".jpg>"+'@' + tweet.user + ': ' + tweet.message+"<span data-livestamp="+time+"></span>"); 
     $tweet.appendTo($timeline);
   }
   var initialLoad = function() {
@@ -18,18 +23,18 @@ $(document).ready(function() {
   }
   initialLoad();
 
-  var refresh = function(){
+  var refresh = function() {
+    $('div').removeClass('bold');
     var currentLength = streams.home.length;
-    console.log(currentLength);
-    if(currentLength > historyLength){
+    if (currentLength > historyLength) {
       var difference = currentLength - historyLength;
-      for(var i=0;i<difference;i++){
-        tweetAppend(i);
+      for (var i = 0; i < difference; i++) {
+        tweetAppend(i, true);
       }
       historyLength = currentLength;
     }
   }
-  $(".refresh").click(function(){
+  $(".refresh").click(function() {
     refresh();
   });
 });
