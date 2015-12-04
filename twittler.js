@@ -51,15 +51,23 @@
      refresh();
    });
    $(".home").click(function() {
+    if(userTweets){
      initialLoad();
      userTweets = false;
+    }else{
+      refresh();
+    }
    });
 
-   $(".post a").on('click', function() {
+   $timeline.on('click','a', function() {
+    if(selectedUser === this.getAttribute('class')){
+      refresh();
+    }else{
      selectedUser = this.getAttribute('class');
      initialLoad(selectedUser);
      userTweets = true;
      selectedUserHistory = streams.users[selectedUser].length;
+   }
    });
 
  });
