@@ -7,8 +7,21 @@
 
 .timeline {
 	border: 2px solid black;
-	height: 500px;
+	height: auto;
 }
 body { 
 	padding-top: 70px; 
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.main > img {
+	padding: 5px;
+}
+
+.tweetPic {
+	padding-top: 5px;
+	padding-right: 5px;
 }
