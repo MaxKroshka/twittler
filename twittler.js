@@ -1,40 +1,63 @@
-$(document).ready(function() {
   var $timeline = $('.timeline');
   var historyLength = streams.home.length;
+  var userTweets = false;
+  var selectedUser;
+  var selectedUserHistory;
 
-  var tweetAppend = function(index, bold) {
-    var tweet = streams.home[index];
-    if (bold === undefined) {
-      var $tweet = $('<div class="post"></div>');
-    } else {
-      $tweet = $("<div class='post bold'></div>");
-    }
-    var time = Math.floor(tweet.created_at/1000);
-    $tweet.html("<img class=tweetPic src="+tweet.user+".jpg>"+'@' + tweet.user + ': ' + tweet.message+"<span data-livestamp="+time+"></span>"); 
-    $tweet.appendTo($timeline);
+  var tweetAppend = function(index, bold, user) {
+    var tweet = user ? streams.users[user][index] : streams.home[index];
+    var $tweet = bold ? $("<div class='post bold'></div>") : $('<div class="post"></div>');
+    var time = Math.floor(tweet.created_at / 1000);
+    $tweet.html("<img class=tweetPic src=" + tweet.user + ".jpg>" + '@' + "<a class=" + tweet.user + " href='#'>" + tweet.user + "</a>" + ': ' + tweet.message + " <span data-livestamp=" + time + "></span>");
+    $tweet.prependTo($timeline);
   }
-  var initialLoad = function() {
-    $timeline.html();
-    var index = streams.home.length - 1;
+  var initialLoad = function(user) {
+    var length = user ? streams.users[user].length : streams.home.length;
+    $timeline.html('');
+    var index = length - 1;
     while (index >= 0) {
-      tweetAppend(index);
+      tweetAppend(index, false, user);
       index -= 1;
     }
   }
+
   initialLoad();
 
   var refresh = function() {
     $('div').removeClass('bold');
-    var currentLength = streams.home.length;
-    if (currentLength > historyLength) {
-      var difference = currentLength - historyLength;
-      for (var i = 0; i < difference; i++) {
-        tweetAppend(i, true);
+    if (!userTweets) {
+      var currentLength = streams.home.length;
+      if (currentLength > historyLength) {
+        var difference = currentLength - historyLength;
+        for (var i = 0; i < difference; i++) {
+          tweetAppend(i, true);
+        }
+        historyLength = currentLength;
       }
-      historyLength = currentLength;
+    } else {
+      var currentLength = streams.users[selectedUser].length;
+      if (currentLength > selectedUserHistory) {
+        var difference = currentLength - selectedUserHistory;
+        for (var i = 0; i < difference; i++) {
+          tweetAppend(i, true, selectedUser);
+        }
+        selectedUserHistory = currentLength;
+      }
     }
   }
+
   $(".refresh").click(function() {
     refresh();
   });
-});
+
+  $(".home").click(function() {
+    initialLoad();
+    userTweets = false;
+  });
+
+  $(".post a").on('click', function() {
+    selectedUser = this.getAttribute('class');
+    initialLoad(selectedUser);
+    userTweets = true;
+    selectedUserHistory = streams.users[selectedUser].length;
+  });
